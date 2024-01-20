@@ -21,6 +21,7 @@
 		E29A3B012B5BCC2500FA3757 /* NutrientsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3B002B5BCC2500FA3757 /* NutrientsView.swift */; };
 		E29A3B032B5BD15B00FA3757 /* Looping.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3B022B5BD15B00FA3757 /* Looping.swift */; };
 		E29A3B062B5BDE5F00FA3757 /* SwiftSugar in Frameworks */ = {isa = PBXBuildFile; productRef = E29A3B052B5BDE5F00FA3757 /* SwiftSugar */; };
+		E2A64C982B5C7A8E009C506A /* ColorSugar in Frameworks */ = {isa = PBXBuildFile; productRef = E2A64C972B5C7A8E009C506A /* ColorSugar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E29A3B062B5BDE5F00FA3757 /* SwiftSugar in Frameworks */,
+				E2A64C982B5C7A8E009C506A /* ColorSugar in Frameworks */,
 				E2666FB82B5C44AF00384A3A /* SwiftHaptics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -116,6 +118,7 @@
 			packageProductDependencies = (
 				E29A3B052B5BDE5F00FA3757 /* SwiftSugar */,
 				E2666FB72B5C44AF00384A3A /* SwiftHaptics */,
+				E2A64C972B5C7A8E009C506A /* ColorSugar */,
 			);
 			productName = PrepLogDemo;
 			productReference = E29A3AEE2B5BC9CB00FA3757 /* PrepLogDemo.app */;
@@ -148,6 +151,7 @@
 			packageReferences = (
 				E29A3B042B5BDE5F00FA3757 /* XCRemoteSwiftPackageReference "SwiftSugar" */,
 				E2666FB62B5C44AE00384A3A /* XCRemoteSwiftPackageReference "SwiftHaptics" */,
+				E2A64C962B5C7A8E009C506A /* XCRemoteSwiftPackageReference "ColorSugar" */,
 			);
 			productRefGroup = E29A3AEF2B5BC9CB00FA3757 /* Products */;
 			projectDirPath = "";
@@ -421,6 +425,14 @@
 				minimumVersion = 0.0.97;
 			};
 		};
+		E2A64C962B5C7A8E009C506A /* XCRemoteSwiftPackageReference "ColorSugar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pxlshpr/ColorSugar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.8;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -433,6 +445,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E29A3B042B5BDE5F00FA3757 /* XCRemoteSwiftPackageReference "SwiftSugar" */;
 			productName = SwiftSugar;
+		};
+		E2A64C972B5C7A8E009C506A /* ColorSugar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A64C962B5C7A8E009C506A /* XCRemoteSwiftPackageReference "ColorSugar" */;
+			productName = ColorSugar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

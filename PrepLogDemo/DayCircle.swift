@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftSugar
 import SwiftHaptics
+import ColorSugar
 
 struct DayCircle: View {
     
@@ -44,7 +45,8 @@ struct DayCircle: View {
                     .frame(height: K.DayCircle.Padding.spacing)
                 ZStack {
                     Circle()
-                        .fill(Color(.systemGray4))
+//                        .fill(Color(.systemGray4))
+                        .fill(Color(hex: "E4E5E9"))
                         .frame(
                             width: width * K.DayCircle.ratio,
                             height: width * K.DayCircle.ratio
