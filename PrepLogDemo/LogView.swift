@@ -15,12 +15,13 @@ struct LogView: View {
     var content: some View {
         ScrollView {
             DaySlider()
-            Text("Log goes here")
+//            Text("Log goes here")
         }
     }
 }
 
-let DayCircleWidth: CGFloat = 80
+//let DayCircleWidth: CGFloat = 80
+let DayCircleWidth: CGFloat = 85
 let DaySliderHeight: CGFloat = 100
 
 struct DaySlider: View {
@@ -103,6 +104,7 @@ struct DaySlider: View {
             .scrollTargetBehavior(DayScrollTargetBehavior())
             .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
             .onAppear {
+                print("width: \(width)")
                 ignoreNextScroll = true
                 scrolledNumberOfDays = 0 + numberOfDummies
                 self.numberOfDummies = numberOfDummies
