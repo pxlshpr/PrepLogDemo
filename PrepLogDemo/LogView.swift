@@ -16,10 +16,14 @@ struct LogView: View {
         GeometryReader {
             let width = $0.size.width
             let dayWidth = calculateDayWidth(for: width)
+            let numberOfDummies = Int(floor((width / 2.0) / dayWidth))
             print("dayWidth: \(dayWidth)")
             DayWidth = dayWidth
             return ScrollView {
-                DaySlider(dayWidth: dayWidth)
+                DaySlider(
+                    dayWidth: dayWidth,
+                    numberOfDummies: numberOfDummies
+                )
             }
         }
     }

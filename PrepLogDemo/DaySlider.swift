@@ -4,8 +4,11 @@ import SwiftSugar
 struct DaySlider: View {
   
     let dayWidth: CGFloat
+//    @State var numberOfDummies: Int = 0
+    let numberOfDummies: Int
 
-//    @Bindable var sliderGeometry: SliderGeometry
+    @State var currentDate: Date = Date.now
+    @State var ignoreNextScroll = false
     @State var scrolledNumberOfDays: Int? = nil
     
     var body: some View {
@@ -37,10 +40,6 @@ struct DaySlider: View {
         currentDate.logTitle
     }
     
-    @State var currentDate: Date = Date.now
-    @State var ignoreNextScroll = false
-    @State var numberOfDummies: Int = 0
-    
     var getCurrentDate: Date {
         guard let scrolledNumberOfDays else { return Date.now }
         return Date.now.moveDayBy(scrolledNumberOfDays)
@@ -69,7 +68,8 @@ struct DaySlider: View {
                 ignoreNextScroll: $ignoreNextScroll
             )
             .id(index)
-            .frame(width: 91.06666666666666)
+//            .frame(width: 91.06666666666666)
+            .frame(width: dayWidth)
             .opacity(isDummy ? 0 : 1)
         }
         
@@ -77,7 +77,7 @@ struct DaySlider: View {
             let width = geometry.size.width
 //            let dayWidth = calculateDayWidth(for: width)
 //            print("dayWidth is: \(dayWidth)")
-            let dayWidth = 91.06666666666666
+//            let dayWidth = 91.06666666666666
             let numberOfDummies = Int(floor((width / 2.0) / dayWidth))
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
@@ -101,7 +101,7 @@ struct DaySlider: View {
 //                self.numberOfDummies = numberOfDummies
 //
 //                /// Scroll to today
-                self.numberOfDummies = numberOfDummies
+//                self.numberOfDummies = numberOfDummies
                 ignoreNextScroll = true
                 scrolledNumberOfDays = 0 + numberOfDummies
             }
