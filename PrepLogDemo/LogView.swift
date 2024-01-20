@@ -6,6 +6,11 @@ struct LogView: View {
     @State var currentDate: Date = Date.now
     @State var savedDate: Date? = nil
 
+    @State var transition: AnyTransition = .asymmetric(
+        insertion: .move(edge: .leading),
+        removal: .move(edge: .trailing)
+    )
+    
     var body: some View {
         NavigationView {
             content
@@ -34,7 +39,23 @@ struct LogView: View {
                     )
                 )
                 
-                MealsSection(currentDate: $currentDate)
+                MealsSection(
+                    currentDate: $currentDate,
+                    transition: $transition
+                )
+            }
+            .onChange(of: currentDate) { oldValue, newValue in
+                transition = if newValue > oldValue {
+                    .asymmetric(
+                        insertion: .move(edge: .trailing),
+                        removal: .move(edge: .leading)
+                    )
+                } else {
+                    .asymmetric(
+                        insertion: .move(edge: .leading),
+                        removal: .move(edge: .trailing)
+                    )
+                }
             }
             .onChange(of: $0.size) { oldValue, newValue in
                 savedDate = currentDate
@@ -49,12 +70,15 @@ struct MealsSection: View {
     @Binding var currentDate: Date
     @State var range: ClosedRange<Int> = 1...100
     
+    @Binding var transition: AnyTransition
+    
     var body: some View {
         LazyVStack {
             headerRow
                 .padding(.horizontal)
             ForEach(range, id: \.self) { _ in
                 dummyMeal1
+                    .transition(transition)
             }
         }
         .onChange(of: currentDate) { oldValue, newValue in
