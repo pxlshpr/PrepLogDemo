@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		E2666FAB2B5C2E1400384A3A /* Date+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */; };
+		E2666FAD2B5C414B00384A3A /* DaySlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FAC2B5C414B00384A3A /* DaySlider.swift */; };
+		E2666FAF2B5C418000384A3A /* DayCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FAE2B5C418000384A3A /* DayCircle.swift */; };
+		E2666FB12B5C418D00384A3A /* Triangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FB02B5C418D00384A3A /* Triangle.swift */; };
+		E2666FB32B5C41A200384A3A /* DayScrollTargetBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FB22B5C41A200384A3A /* DayScrollTargetBehavior.swift */; };
+		E2666FB52B5C41BA00384A3A /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FB42B5C41BA00384A3A /* Global.swift */; };
 		E29A3AF22B5BC9CB00FA3757 /* PrepLogDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */; };
 		E29A3AF42B5BC9CB00FA3757 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3AF32B5BC9CB00FA3757 /* LogView.swift */; };
 		E29A3AF62B5BC9CC00FA3757 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E29A3AF52B5BC9CC00FA3757 /* Assets.xcassets */; };
@@ -19,6 +24,11 @@
 
 /* Begin PBXFileReference section */
 		E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Helpers.swift"; sourceTree = "<group>"; };
+		E2666FAC2B5C414B00384A3A /* DaySlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySlider.swift; sourceTree = "<group>"; };
+		E2666FAE2B5C418000384A3A /* DayCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCircle.swift; sourceTree = "<group>"; };
+		E2666FB02B5C418D00384A3A /* Triangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Triangle.swift; sourceTree = "<group>"; };
+		E2666FB22B5C41A200384A3A /* DayScrollTargetBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayScrollTargetBehavior.swift; sourceTree = "<group>"; };
+		E2666FB42B5C41BA00384A3A /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
 		E29A3AEE2B5BC9CB00FA3757 /* PrepLogDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrepLogDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepLogDemoApp.swift; sourceTree = "<group>"; };
 		E29A3AF32B5BC9CB00FA3757 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
@@ -62,6 +72,11 @@
 			children = (
 				E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */,
 				E29A3AF32B5BC9CB00FA3757 /* LogView.swift */,
+				E2666FB42B5C41BA00384A3A /* Global.swift */,
+				E2666FB22B5C41A200384A3A /* DayScrollTargetBehavior.swift */,
+				E2666FAE2B5C418000384A3A /* DayCircle.swift */,
+				E2666FB02B5C418D00384A3A /* Triangle.swift */,
+				E2666FAC2B5C414B00384A3A /* DaySlider.swift */,
 				E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */,
 				E29A3B022B5BD15B00FA3757 /* Looping.swift */,
 				E29A3B002B5BCC2500FA3757 /* NutrientsView.swift */,
@@ -157,10 +172,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2666FAB2B5C2E1400384A3A /* Date+Helpers.swift in Sources */,
+				E2666FB32B5C41A200384A3A /* DayScrollTargetBehavior.swift in Sources */,
 				E29A3B032B5BD15B00FA3757 /* Looping.swift in Sources */,
 				E29A3AF42B5BC9CB00FA3757 /* LogView.swift in Sources */,
 				E29A3B012B5BCC2500FA3757 /* NutrientsView.swift in Sources */,
+				E2666FAF2B5C418000384A3A /* DayCircle.swift in Sources */,
 				E29A3AF22B5BC9CB00FA3757 /* PrepLogDemoApp.swift in Sources */,
+				E2666FAD2B5C414B00384A3A /* DaySlider.swift in Sources */,
+				E2666FB52B5C41BA00384A3A /* Global.swift in Sources */,
+				E2666FB12B5C418D00384A3A /* Triangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
