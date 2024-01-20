@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftSugar
+import SwiftHaptics
 
 struct DayCircle: View {
     
@@ -7,15 +8,22 @@ struct DayCircle: View {
     
     let numberOfDays: Int
     let numberOfDummies: Int
-    @Binding var scrolledNumberOfDays: Int?
+    @Binding var s: Int?
+    @Binding var ms: Int?
     @Binding var ignoreNextScroll: Bool
 
     var body: some View {
         label
             .onTapGesture {
+                print("👆🏽 Tapped: \(numberOfDays), ignoreNextScroll: \(ignoreNextScroll)")
+                Haptics.feedback(style: .soft)
                 ignoreNextScroll = true
                 withAnimation {
-                    scrolledNumberOfDays = numberOfDays + numberOfDummies
+                    if let s, let ms {
+                        print("    s: \(s), ms: \(ms)")
+                    }
+                    print("    Setting ms to: \(numberOfDays + numberOfDummies)")
+                    ms = numberOfDays + numberOfDummies
                 }
             }
     }
@@ -35,20 +43,14 @@ struct DayCircle: View {
                     Circle()
                         .fill(Color(.systemGray4))
                         .frame(
-//                            width: dayWidth * DayCircleRatio,
-//                            height: dayWidth * DayCircleRatio
                             width: width * DayCircleRatio,
                             height: width * DayCircleRatio
                         )
                     Text("\(numberOfDays)")
                 }
             }
-//            .frame(width: dayWidth, height: DaySliderHeight)
             .frame(width: width, height: DaySliderHeight)
+            .contentShape(Rectangle())
         }
     }
-    
-//    var dayWidth: CGFloat {
-//        sliderGeometry.dayWidth
-//    }
 }
