@@ -45,6 +45,7 @@ struct LogView: View {
 
 struct MealsSection: View {
     
+    @Environment(\.colorScheme) var colorScheme
     @Binding var currentDate: Date
     @State var range: ClosedRange<Int> = 1...100
     
@@ -66,7 +67,7 @@ struct MealsSection: View {
     var dummyMeal1: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 5)
-                .fill(Color.purple.opacity(0.2))
+                .fill(Color.purple.opacity(colorScheme == .light ? 0.06 : 0.2))
             VStack {
                 HStack {
                     Text("11:00 am • Breakfast")
@@ -85,7 +86,7 @@ struct MealsSection: View {
                     Text("🥚")
                     HStack(spacing: 0) {
                         Text("Egg")
-                            .fontWeight(.bold)
+                            .fontWeight(.medium)
                         Text(", Whole, Raw")
                             .foregroundStyle(.secondary)
                         Text(", Fresh")
@@ -101,7 +102,7 @@ struct MealsSection: View {
                     Text("🧈")
                     HStack(spacing: 0) {
                         Text("Butter")
-                            .fontWeight(.bold)
+                            .fontWeight(.medium)
                         Text(", Unsalted")
                             .foregroundStyle(.secondary)
                         Text(", Lurpak")
