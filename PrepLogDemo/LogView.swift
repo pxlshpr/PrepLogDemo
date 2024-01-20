@@ -57,39 +57,8 @@ struct LogView: View {
 
                 LazyVStack {
 
-                    NutritionSection(
-                        name: "Calories",
-                        color: CaloriesColor,
-                        percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.7 : 0.9 },
-                            set: { _ in }
-                        )
-                    )
-                    NutritionSection(
-                        name: "Protein",
-                        color: ProteinColor,
-                        percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.95 : 1.0 },
-                            set: { _ in }
-                        )
-                     )
-                    NutritionSection(
-                        name: "Fat",
-                        color: FatColor,
-                        percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.8 : 1.5 },
-                            set: { _ in }
-                        )
-                    )
-                    NutritionSection(
-                        name: "Carbs",
-                        color: CarbsColor,
-                        percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.4 : 0.9 },
-                            set: { _ in }
-                        )
-                     )
-
+                    NutritionSection(currentDate: $currentDate)
+                    
                     MealsSection(
                         currentDate: $currentDate,
                         transition: $transition
@@ -121,20 +90,59 @@ struct NutritionSection: View {
     
     @Environment(\.colorScheme) var colorScheme
 
-    let name: String
-    let color: Color
-    @Binding var percent: Double
+    @Binding var currentDate: Date
     
     var body: some View {
         ZStack {
 //            RoundedRectangle(cornerRadius: 5)
             Rectangle()
-                .fill(color.opacity(colorScheme == .light ? 0.06 : 0.2))
+                .fill(Color.gray.opacity(colorScheme == .light ? 0.06 : 0.2))
             VStack(spacing: 0) {
-                HStack {
-                    Text(name)
-                        .font(.headline)
-                    Spacer()
+                bar(
+                    name: "Calories",
+                    color: CaloriesColor,
+                    percent: currentDate.isToday ? 0.7 : 0.9,
+                    showMenu: true
+                )
+                bar(
+                    name: "Protein",
+                    color: ProteinColor,
+                    percent: currentDate.isToday ? 0.95 : 1.0
+                )
+                bar(
+                    name: "Fat",
+                    color: FatColor,
+                    percent: currentDate.isToday ? 0.8 : 1.5
+                )
+                bar(
+                    name: "Carbs",
+                    color: CarbsColor,
+                    percent: currentDate.isToday ? 0.4 : 0.9
+                )
+            }
+        }
+        .padding(.bottom, 10)
+        .animation(.snappy, value: currentDate)
+    }
+    
+    func bar(name: String, color: Color, percent: Double, showMenu: Bool = false) -> some View {
+        var barColor: Color {
+            switch percent {
+            case 1.0:
+                .green
+            case _ where percent > 1.0:
+                .red
+            default:
+                color
+            }
+        }
+
+        return VStack(spacing: 0) {
+            HStack {
+                Text(name)
+                    .font(.headline)
+                Spacer()
+                if showMenu {
                     Menu {
                     } label: {
                         Image(systemName: "ellipsis")
@@ -145,39 +153,26 @@ struct NutritionSection: View {
                             .contentShape(Rectangle())
                     }
                 }
-                .frame(height: 50)
-                
-                GeometryReader {
-                    let width = $0.size.width
-                    ZStack {
+            }
+            .frame(height: 50)
+            
+            GeometryReader {
+                let width = $0.size.width
+                ZStack {
+                    RoundedRectangle(cornerRadius: 3)
+                        .foregroundStyle(Color(.systemGray6))
+                    HStack(spacing: 0) {
                         RoundedRectangle(cornerRadius: 3)
-                            .foregroundStyle(Color(.systemGray6))
-                        HStack(spacing: 0) {
-                            RoundedRectangle(cornerRadius: 3)
-                                .foregroundStyle(barColor)
-                            Spacer()
-                                .frame(width: width * (1 - percent))
-                        }
+                            .foregroundStyle(barColor)
+                        Spacer()
+                            .frame(width: width * min(max((1 - percent), 0), 1))
                     }
                 }
-                
-                Spacer().frame(height: 15)
             }
-            .padding(.horizontal)
+            
+            Spacer().frame(height: 15)
         }
-        .padding(.bottom, 10)
-        .animation(.snappy, value: percent)
-    }
-    
-    var barColor: Color {
-        switch percent {
-        case 1.0: 
-            .green
-        case _ where percent > 1.0: 
-            .red
-        default:    
-            color
-        }
+        .padding(.horizontal)
     }
 }
 
