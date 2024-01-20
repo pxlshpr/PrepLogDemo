@@ -159,10 +159,10 @@ struct NutritionSection: View {
             GeometryReader {
                 let width = $0.size.width
                 ZStack {
-                    RoundedRectangle(cornerRadius: 3)
-                        .foregroundStyle(Color(.systemGray6))
+                    RoundedRectangle(cornerRadius: 5)
+                        .foregroundStyle(Color(.systemGray5))
                     HStack(spacing: 0) {
-                        RoundedRectangle(cornerRadius: 3)
+                        RoundedRectangle(cornerRadius: 5)
                             .foregroundStyle(barColor)
                         Spacer()
                             .frame(width: width * min(max((1 - percent), 0), 1))
