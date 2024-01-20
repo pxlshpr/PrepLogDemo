@@ -66,7 +66,7 @@ struct K {
     struct DayCircle {
         struct Padding {
             static let top: CGFloat = 5
-            static let bottom: CGFloat = 5
+            static let bottom: CGFloat = 20
             static let spacing: CGFloat = 10
         }
         static let text: CGFloat = 20
