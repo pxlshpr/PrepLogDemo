@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E2666FAB2B5C2E1400384A3A /* Date+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */; };
 		E29A3AF22B5BC9CB00FA3757 /* PrepLogDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */; };
 		E29A3AF42B5BC9CB00FA3757 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E29A3AF32B5BC9CB00FA3757 /* LogView.swift */; };
 		E29A3AF62B5BC9CC00FA3757 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E29A3AF52B5BC9CC00FA3757 /* Assets.xcassets */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Helpers.swift"; sourceTree = "<group>"; };
 		E29A3AEE2B5BC9CB00FA3757 /* PrepLogDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrepLogDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepLogDemoApp.swift; sourceTree = "<group>"; };
 		E29A3AF32B5BC9CB00FA3757 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 			children = (
 				E29A3AF12B5BC9CB00FA3757 /* PrepLogDemoApp.swift */,
 				E29A3AF32B5BC9CB00FA3757 /* LogView.swift */,
+				E2666FAA2B5C2E1400384A3A /* Date+Helpers.swift */,
 				E29A3B022B5BD15B00FA3757 /* Looping.swift */,
 				E29A3B002B5BCC2500FA3757 /* NutrientsView.swift */,
 				E29A3AF52B5BC9CC00FA3757 /* Assets.xcassets */,
@@ -153,6 +156,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2666FAB2B5C2E1400384A3A /* Date+Helpers.swift in Sources */,
 				E29A3B032B5BD15B00FA3757 /* Looping.swift in Sources */,
 				E29A3AF42B5BC9CB00FA3757 /* LogView.swift in Sources */,
 				E29A3B012B5BCC2500FA3757 /* NutrientsView.swift in Sources */,

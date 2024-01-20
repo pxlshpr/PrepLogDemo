@@ -3,6 +3,8 @@ import SwiftSugar
 
 struct LogView: View {
     
+//    @Environment(SliderGeometry.self) var sliderGeometry: SliderGeometry
+    
     var body: some View {
         NavigationView {
             content
@@ -21,11 +23,26 @@ struct LogView: View {
 }
 
 //let DayCircleWidth: CGFloat = 80
-let DayCircleWidth: CGFloat = 85
+//let dayCircleWidth: CGFloat = 85
 let DaySliderHeight: CGFloat = 100
+
+let MinDayCircleWidth: CGFloat = 80
+let MaxDayCircleWidth: CGFloat = 100
+
+var DayCircleRatio: CGFloat = 0.75
+
+var DayWidth: CGFloat = MinDayCircleWidth
+
+//class SliderGeometry: Observable {
+//    static let shared = SliderGeometry()
+////    var dayWidth: CGFloat = MinDayCircleWidth
+//    var dayWidth: CGFloat = 86.4
+////    var dayWidth: CGFloat = 91.06666666666666
+//}
 
 struct DaySlider: View {
     
+//    @Bindable var sliderGeometry: SliderGeometry
     @State var scrolledNumberOfDays: Int? = nil
     
     var body: some View {
@@ -66,10 +83,10 @@ struct DaySlider: View {
         return Date.now.moveDayBy(scrolledNumberOfDays)
     }
     
-    let start = -16
-    let end = 16
-//    let start = -3000
-//    let end = 365
+//    let start = -16
+//    let end = 16
+    let start = -3000
+    let end = 365
 
     var scrollView: some View {
         
@@ -80,6 +97,7 @@ struct DaySlider: View {
                 index > end - numberOfDummies
             }
             return DayCircle(
+//                sliderGeometry: sliderGeometry,
                 numberOfDays: index,
                 numberOfDummies: numberOfDummies,
                 scrolledNumberOfDays: $scrolledNumberOfDays,
@@ -92,8 +110,10 @@ struct DaySlider: View {
         
         return GeometryReader {
             let width = $0.size.width
-            let numberOfDummies = Int(floor((width / 2.0) / DayCircleWidth))
-            ScrollView(.horizontal) {
+            let dayWidth = dayWidth(for: width)
+            DayWidth = dayWidth
+            self.numberOfDummies = Int(floor((width / 2.0) / dayWidth))
+            return ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
                     ForEach(start...end, id: \.self) { index in
                         circle(at: index, ignoring: numberOfDummies)
@@ -107,21 +127,56 @@ struct DaySlider: View {
                 print("width: \(width)")
                 ignoreNextScroll = true
                 scrolledNumberOfDays = 0 + numberOfDummies
-                self.numberOfDummies = numberOfDummies
+//                self.numberOfDummies = numberOfDummies
             }
             .scrollIndicators(.hidden)
         }
         .frame(height: DaySliderHeight)
-        .onChange(of: scrolledNumberOfDays) { oldValue, newValue in
-            var date = getCurrentDate
-            if ignoreNextScroll {
-                date = date.moveDayBy(-numberOfDummies)
-                ignoreNextScroll = false
+        .onChange(of: scrolledNumberOfDays, scrolledNumberOfDaysChanged)
+    }
+    
+//    var dayWidth: CGFloat {
+//        sliderGeometry.dayWidth
+//    }
+
+    
+    func scrolledNumberOfDaysChanged(oldValue: Int?, newValue: Int?) {
+        var date = getCurrentDate
+        if ignoreNextScroll {
+            date = date.moveDayBy(-numberOfDummies)
+            ignoreNextScroll = false
+        }
+        self.currentDate = date
+//        print("scrolledNumberOfDays changed to: \(String(describing: newValue))")
+    }
+}
+
+func dayWidth(for width: CGFloat) -> CGFloat {
+    var min: (i: CGFloat, remainder: CGFloat)? = nil
+    for i in Int(MinDayCircleWidth)...Int(MaxDayCircleWidth) {
+        let remainder = width.truncatingRemainder(dividingBy: CGFloat(i))
+        print("Checking: \(i): \(remainder)")
+        if let m = min {
+            if remainder < m.remainder {
+                min = (CGFloat(i), remainder)
             }
-            self.currentDate = date
-            print("scrolledNumberOfDays changed to: \(String(describing: newValue))")
+        } else {
+            min = (CGFloat(i), remainder)
         }
     }
+    
+    guard let min else {
+        fatalError()
+    }
+    print("Min is: \(min)")
+    let divided = width / min.i
+    var whole = floor(divided)
+    if whole.truncatingRemainder(dividingBy: 2.0) == 0 {
+        whole += 1
+    }
+    let optimal = width / whole
+    print("Divided = \(divided), whole = \(whole), optimal = \(optimal)")
+    return optimal
 }
 
 struct DayScrollTargetBehavior: ScrollTargetBehavior {
@@ -134,7 +189,9 @@ struct DayScrollTargetBehavior: ScrollTargetBehavior {
         /// mid points at 40, 120, etc.
         /// let w = DayCircleWidth
         /// midPoint for 1 = (1 * 80) + 40 = (1 * w) + (w/2)
-        let w = DayCircleWidth
+        let w = DayWidth
+//        let w = SliderGeometry.shared.dayWidth
+        
         func midX(forIndex index: Int) -> CGFloat {
             (CGFloat(index) * w) + (w/2.0)
         }
@@ -167,104 +224,56 @@ struct DayScrollTargetBehavior: ScrollTargetBehavior {
     }
 }
 
-extension Date {
-    var logTitle: String {
-        var prefix: String? {
-            if isToday { "Today" }
-            else if isYesterday { "Yesterday" }
-            else if isTomorrow { "Tomorrow" }
-            else if isThisYear { weekdayName }
-            else { nil }
-        }
-        
-        return if let prefix {
-            "\(prefix), \(mediumDateString)"
-        } else {
-            mediumDateString
-        }
-    }
-    
-    var mediumDateString: String {
-        let formatter = DateFormatter()
-        if isThisYear {
-            formatter.dateFormat = "d MMMM"
-        } else {
-            formatter.dateFormat = "d MMMM yyyy"
-        }
-        return formatter.string(from: self)
-    }
-    
-    var isThisYear: Bool {
-        year == Date.now.year
-    }
-    
-    var weekdayName: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE"
-        return dateFormatter.string(from: self)
-    }
-    
-    var weekdayNumber: Int? {
-        Calendar.current.dateComponents([.weekday], from: self).weekday
-    }
-    
-    var weekdayUnambiguousLetter: String {
-        switch weekdayNumber {
-        case 1:     "Su"
-        case 2:     "M"
-        case 3:     "Tu"
-        case 4:     "W"
-        case 5:     "Th"
-        case 6:     "F"
-        case 7:     "Sa"
-        default:    ""
-        }
-    }
-}
-
 struct DayCircle: View {
     
-//    let date: Date
+//    @Bindable var sliderGeometry: SliderGeometry
+    
     let numberOfDays: Int
     let numberOfDummies: Int
     @Binding var scrolledNumberOfDays: Int?
     @Binding var ignoreNextScroll: Bool
 
-    var date: Date {
-        Date.now.moveDayBy(numberOfDays)
-    }
-    
     var body: some View {
-//        Button {
-//            withAnimation {
-//                scrolledNumberOfDays = numberOfDays
-//            }
-//        } label: {
-            label
+        label
             .onTapGesture {
                 ignoreNextScroll = true
                 withAnimation {
                     scrolledNumberOfDays = numberOfDays + numberOfDummies
                 }
             }
-//        }
+    }
+    
+    var date: Date {
+        Date.now.moveDayBy(numberOfDays)
     }
     
     var label: some View {
-        VStack {
-            Text(date.weekdayUnambiguousLetter)
-                .font(.subheadline)
-                .foregroundStyle(Color(.secondaryLabel))
-            ZStack {
-                Circle()
-                    .fill(Color(.systemGray4))
-                    .frame(width: 60, height: 60)
-                Text("\(numberOfDays)")
+        GeometryReader {
+            let width = $0.size.width
+            VStack {
+                Text(date.weekdayUnambiguousLetter)
+                    .font(.subheadline)
+                    .foregroundStyle(Color(.secondaryLabel))
+                ZStack {
+                    Circle()
+                        .fill(Color(.systemGray4))
+                        .frame(
+//                            width: dayWidth * DayCircleRatio,
+//                            height: dayWidth * DayCircleRatio
+                            width: width * DayCircleRatio,
+                            height: width * DayCircleRatio
+                        )
+                    Text("\(numberOfDays)")
+                }
             }
-//                .padding()
+//            .frame(width: dayWidth, height: DaySliderHeight)
+            .frame(width: width, height: DaySliderHeight)
         }
-        .frame(width: DayCircleWidth, height: DaySliderHeight)
     }
+    
+//    var dayWidth: CGFloat {
+//        sliderGeometry.dayWidth
+//    }
 }
 
 struct Triangle: Shape {
@@ -279,6 +288,7 @@ struct Triangle: Shape {
         return path
     }
 }
+
 #Preview {
     LogView()
 }
