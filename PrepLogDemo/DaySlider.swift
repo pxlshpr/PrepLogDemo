@@ -18,10 +18,36 @@ struct DaySlider: View {
     let start = -3000
     let end = 365
 
-    init(dayWidth: CGFloat, numberOfDummies: Int) {
+    @State var scrollTask: Task<Void, Error>? = nil
+    
+    @Binding var width: CGFloat
+    init(
+        dayWidth: CGFloat,
+        numberOfDummies: Int,
+        width: Binding<CGFloat>
+    ) {
         self.dayWidth = dayWidth
         self.numberOfDummies = numberOfDummies
         print("✨ DaySlider.init()")
+        _width = width
+    }
+    
+    func refreshScroll() {
+        scrollTask?.cancel()
+        scrollTask = Task {
+            let numberOfDays = currentDate.numberOfDaysFrom(Date.now)
+            try await sleepTask(0.1)
+            try Task.checkCancellation()
+            await MainActor.run {
+                print("Scrolling now...")
+                self.ignoreNextScroll = true
+                self.scrolledNumberOfDays = nil
+//                withAnimation {
+//                    self.scrolledNumberOfDays = 0 + numberOfDummies
+                    self.scrolledNumberOfDays = numberOfDays + numberOfDummies
+//                }
+            }
+        }
     }
     
     var body: some View {
@@ -37,7 +63,15 @@ struct DaySlider: View {
             ignoreNextScroll = true
             scrolledNumberOfDays = 0 + numberOfDummies
         }
+        .onChange(of: width) { oldValue, newValue in
+            print("width changed to: \(newValue)")
+            refreshScroll()
+        }
         .onChange(of: scrolledNumberOfDays) { oldValue, newValue in
+            guard newValue != nil else {
+                /// Make sure we're ignoring the corrective setting of `scrolledNumberOfDays` to `nil` in `DayCircle` because otherwise we'll be setting `ignoreNextScroll` to `false` and not correctly setting the date on the next (actual) change of `scrolledNumberOfDays`
+                return
+            }
             var date = getCurrentDate
             if ignoreNextScroll {
                 date = date.moveDayBy(-numberOfDummies)
@@ -80,7 +114,7 @@ struct DaySlider: View {
     var titleButton: some View {
         Text(dateTitle)
             .foregroundStyle(Color(.label))
-            .font(horizontalSizeClass == .compact ? .title : .largeTitle)
+            .font(horizontalSizeClass == .compact ? .title2 : .largeTitle)
             .fontWeight(.bold)
             .padding(.bottom, 10)
             .onTapGesture {

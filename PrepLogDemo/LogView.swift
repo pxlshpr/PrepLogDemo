@@ -22,7 +22,11 @@ struct LogView: View {
             return ScrollView {
                 DaySlider(
                     dayWidth: dayWidth,
-                    numberOfDummies: numberOfDummies
+                    numberOfDummies: numberOfDummies,
+                    width: Binding<CGFloat>(
+                        get: { width },
+                        set: { _ in }
+                    )
                 )
             }
         }
