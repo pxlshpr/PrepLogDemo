@@ -1,14 +1,17 @@
 import Foundation
 
-let MinDayCircleWidth = 80
-let MaxDayCircleWidth = 100
 let DaySliderHeight: CGFloat = 100
 var DayCircleRatio: CGFloat = 0.75
 
 var DayWidth: CGFloat = 0
 
 func circleWidthRange(for width: CGFloat) -> ClosedRange<Int> {
-    MinDayCircleWidth...MaxDayCircleWidth
+    switch width {
+    case _ where width < 350:   30...50
+    case 300..<500:             60...80
+    case 500..<950:            80...100
+    default:                    90...120
+    }
 }
 
 func calculateDayWidth(for width: CGFloat) -> CGFloat {
@@ -33,6 +36,24 @@ func calculateDayWidth(for width: CGFloat) -> CGFloat {
     }
     let optimal = width / whole
     return optimal
+}
+
+func calculateDayHeight(forDayWidth dayWidth: CGFloat) -> CGFloat {
+    let padding = 100.0
+    let topPadding = padding
+    let bottomPadding = padding
+    let spacing = 10.0
+    let textHeight = 10.0
+
+    return topPadding
+    +
+    textHeight
+    +
+    spacing
+    +
+    dayWidth
+    +
+    bottomPadding
 }
 
 //MARK: - Legacy

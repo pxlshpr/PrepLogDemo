@@ -47,7 +47,8 @@ struct DayCircle: View {
                     Text("\(numberOfDays)")
                 }
             }
-            .frame(width: width, height: DaySliderHeight)
+//            .frame(width: width, height: DaySliderHeight)
+            .frame(width: width)
             .contentShape(Rectangle())
         }
     }

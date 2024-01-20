@@ -36,17 +36,26 @@ struct DaySlider: View {
         scrollTask?.cancel()
         scrollTask = Task {
             let numberOfDays = currentDate.numberOfDaysFrom(Date.now)
-            try await sleepTask(0.1)
+            try await sleepTask(0.3)
             try Task.checkCancellation()
             await MainActor.run {
-                print("Scrolling now...")
-                self.ignoreNextScroll = true
-                self.scrolledNumberOfDays = nil
-//                withAnimation {
-//                    self.scrolledNumberOfDays = 0 + numberOfDummies
-                    self.scrolledNumberOfDays = numberOfDays + numberOfDummies
-//                }
+                scrollToNumberOfDays(numberOfDays)
             }
+
+//            try await sleepTask(0.2)
+//            try Task.checkCancellation()
+//            await MainActor.run {
+//                /// Backup scroll (in case the first one was too quick)
+//                scrollToNumberOfDays(numberOfDays)
+//            }
+        }
+    }
+    
+    func scrollToNumberOfDays(_ numberOfDays: Int) {
+        self.ignoreNextScroll = true
+        self.scrolledNumberOfDays = nil
+        withAnimation {
+            self.scrolledNumberOfDays = numberOfDays + numberOfDummies
         }
     }
     
@@ -93,7 +102,9 @@ struct DaySlider: View {
         .scrollTargetBehavior(DayScrollTargetBehavior())
         .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
         .scrollIndicators(.hidden)
-        .frame(height: DaySliderHeight)
+//        .fixedSize(horizontal: true, vertical: true)
+//        .frame(height: DaySliderHeight)
+        .frame(height: calculateDayHeight(forDayWidth: dayWidth))
     }
     
     func dayCircle(at index: Int) -> some View {
