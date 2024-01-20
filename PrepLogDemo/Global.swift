@@ -1,8 +1,5 @@
 import Foundation
 
-let DaySliderHeight: CGFloat = 100
-var DayCircleRatio: CGFloat = 0.75
-
 var DayWidth: CGFloat = 0
 
 func circleWidthRange(for width: CGFloat) -> ClosedRange<Int> {
@@ -36,24 +33,6 @@ func calculateDayWidth(for width: CGFloat) -> CGFloat {
     }
     let optimal = width / whole
     return optimal
-}
-
-func calculateDayHeight(forDayWidth dayWidth: CGFloat) -> CGFloat {
-    let padding = 100.0
-    let topPadding = padding
-    let bottomPadding = padding
-    let spacing = 10.0
-    let textHeight = 10.0
-
-    return topPadding
-    +
-    textHeight
-    +
-    spacing
-    +
-    dayWidth
-    +
-    bottomPadding
 }
 
 //MARK: - Legacy

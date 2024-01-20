@@ -33,23 +33,51 @@ struct DayCircle: View {
     var label: some View {
         GeometryReader {
             let width = $0.size.width
-            VStack {
+            VStack(spacing: 0) {
+                Spacer()
+                    .frame(height: K.DayCircle.Padding.top)
                 Text(date.weekdayUnambiguousLetter)
                     .font(.subheadline)
                     .foregroundStyle(Color(.secondaryLabel))
+                    .frame(height: K.DayCircle.text)
+                Spacer()
+                    .frame(height: K.DayCircle.Padding.spacing)
                 ZStack {
                     Circle()
                         .fill(Color(.systemGray4))
                         .frame(
-                            width: width * DayCircleRatio,
-                            height: width * DayCircleRatio
+                            width: width * K.DayCircle.ratio,
+                            height: width * K.DayCircle.ratio
                         )
                     Text("\(numberOfDays)")
                 }
+                Spacer()
+                    .frame(height: K.DayCircle.Padding.bottom)
             }
-//            .frame(width: width, height: DaySliderHeight)
+//            .frame(width: width, height: K.DayCircle.height(dayWidth: width))
             .frame(width: width)
+//            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
+        }
+    }
+}
+
+struct K {
+    struct DayCircle {
+        struct Padding {
+            static let top: CGFloat = 5
+            static let bottom: CGFloat = 5
+            static let spacing: CGFloat = 10
+        }
+        static let text: CGFloat = 20
+        static let ratio: CGFloat = 0.75
+        
+        static func height(dayWidth: CGFloat) -> CGFloat {
+            Padding.top
+            + text
+            + Padding.spacing
+            + (dayWidth * ratio)
+            + Padding.bottom
         }
     }
 }

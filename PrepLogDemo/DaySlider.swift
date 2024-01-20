@@ -8,7 +8,9 @@ struct DaySlider: View {
     let dayWidth: CGFloat
     let numberOfDummies: Int
 
-    @State var currentDate: Date = Date.now
+//    @State var currentDate: Date = Date.now
+    @Binding var currentDate: Date
+    @Binding var savedDate: Date?
     @State var ignoreNextScroll = false
     
     @State var scrolledNumberOfDays: Int? = nil
@@ -22,38 +24,41 @@ struct DaySlider: View {
     
     @Binding var width: CGFloat
     init(
+        currentDate: Binding<Date>,
+        savedDate: Binding<Date?>,
         dayWidth: CGFloat,
         numberOfDummies: Int,
         width: Binding<CGFloat>
     ) {
+        _currentDate = currentDate
+        _savedDate = savedDate
         self.dayWidth = dayWidth
         self.numberOfDummies = numberOfDummies
-        print("✨ DaySlider.init()")
+        print("✨ DaySlider.init(dayWidth: \(dayWidth), numberOfDummies: \(numberOfDummies))")
         _width = width
     }
     
     func refreshScroll() {
+        let currentDate = currentDate
+        print("Scroll back to: \(currentDate.mediumDateString)")
         scrollTask?.cancel()
         scrollTask = Task {
             let numberOfDays = currentDate.numberOfDaysFrom(Date.now)
             try await sleepTask(0.3)
             try Task.checkCancellation()
             await MainActor.run {
+                checkNextScroll = true
                 scrollToNumberOfDays(numberOfDays)
             }
-
-//            try await sleepTask(0.2)
-//            try Task.checkCancellation()
-//            await MainActor.run {
-//                /// Backup scroll (in case the first one was too quick)
-//                scrollToNumberOfDays(numberOfDays)
-//            }
         }
     }
+    
+    @State var checkNextScroll = false
     
     func scrollToNumberOfDays(_ numberOfDays: Int) {
         self.ignoreNextScroll = true
         self.scrolledNumberOfDays = nil
+        print("scrolling to numberOfDays: \(numberOfDays) with numberOfDummies: \(numberOfDummies) dayWidth: \(dayWidth)")
         withAnimation {
             self.scrolledNumberOfDays = numberOfDays + numberOfDummies
         }
@@ -87,6 +92,15 @@ struct DaySlider: View {
                 ignoreNextScroll = false
             }
             self.currentDate = date
+            
+            if checkNextScroll, currentDate != savedDate, let savedDate {
+                print("We here:")
+                print("currentDate: \(currentDate.mediumDateString)")
+                print("savedDate: \(savedDate.mediumDateString)")
+                scrollToNumberOfDays(savedDate.numberOfDaysFrom(Date.now))
+                self.currentDate = savedDate
+                checkNextScroll = false
+            }
         }
     }
     
@@ -102,9 +116,7 @@ struct DaySlider: View {
         .scrollTargetBehavior(DayScrollTargetBehavior())
         .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
         .scrollIndicators(.hidden)
-//        .fixedSize(horizontal: true, vertical: true)
-//        .frame(height: DaySliderHeight)
-        .frame(height: calculateDayHeight(forDayWidth: dayWidth))
+        .frame(height: K.DayCircle.height(dayWidth: dayWidth))
     }
     
     func dayCircle(at index: Int) -> some View {
