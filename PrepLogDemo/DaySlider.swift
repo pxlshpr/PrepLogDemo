@@ -94,6 +94,7 @@ struct DaySlider: View {
             self.currentDate = date
             
             if checkNextScroll, currentDate != savedDate, let savedDate {
+                /// This is required for the iPhone because during the orientation change, we actually get two consecutive (different) width changes, with the numberOfDummies incorrectly being calculated for the first width. This is a sanity check that makes sure the date we have rememebr in `LogView` before the transition is still the same as current date—and if not, scrolls to it again and forces the date change to the correct date.
                 print("We here:")
                 print("currentDate: \(currentDate.mediumDateString)")
                 print("savedDate: \(savedDate.mediumDateString)")
