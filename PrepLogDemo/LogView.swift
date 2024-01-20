@@ -17,6 +17,8 @@ let MealsAccentColor = Color.gray
 
 struct LogView: View {
     
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
     @State var currentDate: Date = Date.now
     @State var savedDate: Date? = nil
 
@@ -26,12 +28,23 @@ struct LogView: View {
     )
     
     var body: some View {
-        NavigationView {
-            content
-                .navigationTitle("Prep")
-                .navigationBarTitleDisplayMode(.inline)
+        Group {
+            HStack(spacing: 0) {
+                if horizontalSizeClass == .regular {
+                    Text("Sidebar")
+                        .frame(width: 400)
+                }
+                Divider()
+                    .frame(width: 1)
+                    .frame(maxHeight: .infinity)
+                NavigationView {
+                    content
+                        .navigationTitle("Prep")
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .navigationViewStyle(.stack)
+            }
         }
-        .navigationViewStyle(.stack)
     }
     
     var content: some View {
@@ -57,7 +70,9 @@ struct LogView: View {
 
                 LazyVStack {
 
-                    NutritionSection(currentDate: $currentDate)
+                    if horizontalSizeClass == .compact {
+                        NutritionSection(currentDate: $currentDate)
+                    }
                     
                     MealsSection(
                         currentDate: $currentDate,
@@ -101,23 +116,23 @@ struct NutritionSection: View {
                 bar(
                     name: "Calories",
                     color: CaloriesColor,
-                    percent: currentDate.isToday ? 0.7 : 0.9,
+                    percent: !currentDate.isToday ? 0.7 : 0.9,
                     showMenu: true
                 )
                 bar(
                     name: "Protein",
                     color: ProteinColor,
-                    percent: currentDate.isToday ? 0.95 : 1.0
+                    percent: !currentDate.isToday ? 0.95 : 1.0
                 )
                 bar(
                     name: "Fat",
                     color: FatColor,
-                    percent: currentDate.isToday ? 0.8 : 1.5
+                    percent: !currentDate.isToday ? 0.8 : 1.5
                 )
                 bar(
                     name: "Carbs",
                     color: CarbsColor,
-                    percent: currentDate.isToday ? 0.4 : 0.9
+                    percent: !currentDate.isToday ? 0.4 : 0.9
                 )
             }
         }
@@ -180,8 +195,7 @@ struct MealsSection: View {
     
     @Environment(\.colorScheme) var colorScheme
     @Binding var currentDate: Date
-//    @State var range: ClosedRange<Int> = 1...100
-    @State var range: ClosedRange<Int> = 1...1
+    @State var range: ClosedRange<Int> = 1...100
 
     @Binding var transition: AnyTransition
     
@@ -196,8 +210,7 @@ struct MealsSection: View {
         }
         .onChange(of: currentDate) { oldValue, newValue in
             withAnimation {
-//                range = currentDate.isToday ? 1...100 : 1...1
-                range = !currentDate.isToday ? 1...100 : 1...1
+                range = currentDate.isToday ? 1...100 : 1...1
             }
         }
     }
