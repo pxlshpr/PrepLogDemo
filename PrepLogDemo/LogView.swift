@@ -43,18 +43,19 @@ struct LogView: View {
 
             return ScrollView {
                 
-                LazyVStack {
-
-                    DaySlider(
-                        currentDate: $currentDate,
-                        savedDate: $savedDate,
-                        dayWidth: dayWidth,
-                        numberOfDummies: numberOfDummies,
-                        width: Binding<CGFloat>(
-                            get: { width },
-                            set: { _ in }
-                        )
+                /// This shouldn't be part of the `LazyVStack` otherwise it keeps getting refreshed
+                DaySlider(
+                    currentDate: $currentDate,
+                    savedDate: $savedDate,
+                    dayWidth: dayWidth,
+                    numberOfDummies: numberOfDummies,
+                    width: Binding<CGFloat>(
+                        get: { width },
+                        set: { _ in }
                     )
+                )
+
+                LazyVStack {
 
                     NutritionSection(
                         name: "Calories",
@@ -68,7 +69,7 @@ struct LogView: View {
                         name: "Protein",
                         color: ProteinColor,
                         percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.95 : 0.1 },
+                            get: { currentDate.isToday ? 0.95 : 1.0 },
                             set: { _ in }
                         )
                      )
@@ -76,7 +77,7 @@ struct LogView: View {
                         name: "Fat",
                         color: FatColor,
                         percent: Binding<Double>(
-                            get: { currentDate.isToday ? 0.8 : 0.2 },
+                            get: { currentDate.isToday ? 0.8 : 1.5 },
                             set: { _ in }
                         )
                     )
@@ -153,7 +154,7 @@ struct NutritionSection: View {
                             .foregroundStyle(Color(.systemGray6))
                         HStack(spacing: 0) {
                             RoundedRectangle(cornerRadius: 3)
-                                .foregroundStyle(color)
+                                .foregroundStyle(barColor)
                             Spacer()
                                 .frame(width: width * (1 - percent))
                         }
@@ -166,6 +167,17 @@ struct NutritionSection: View {
         }
         .padding(.bottom, 10)
         .animation(.snappy, value: percent)
+    }
+    
+    var barColor: Color {
+        switch percent {
+        case 1.0: 
+            .green
+        case _ where percent > 1.0: 
+            .red
+        default:    
+            color
+        }
     }
 }
 
