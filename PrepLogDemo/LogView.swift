@@ -22,11 +22,6 @@ struct LogView: View {
     @State var currentDate: Date = Date.now
     @State var savedDate: Date? = nil
 
-    @State var transition: AnyTransition = .asymmetric(
-        insertion: .move(edge: .leading),
-        removal: .move(edge: .trailing)
-    )
-    
     @State var sideBarWidth: CGFloat = 400
     
     var body: some View {
@@ -37,7 +32,7 @@ struct LogView: View {
                         ScrollView {
                             NutritionSection(
                                 currentDate: $currentDate,
-                                showBackground: false
+                                inList: false
                             )
                         }
                         .toolbar {
@@ -93,28 +88,14 @@ struct LogView: View {
                     if horizontalSizeClass == .compact {
                         NutritionSection(
                             currentDate: $currentDate,
-                            showBackground: true
+                            inList: true
                         )
                     }
                     
                     MealsSection(
-                        currentDate: $currentDate,
-                        transition: $transition
+                        currentDate: $currentDate
                     )
                     
-                }
-            }
-            .onChange(of: currentDate) { oldValue, newValue in
-                transition = if newValue > oldValue {
-                    .asymmetric(
-                        insertion: .move(edge: .trailing),
-                        removal: .move(edge: .leading)
-                    )
-                } else {
-                    .asymmetric(
-                        insertion: .move(edge: .leading),
-                        removal: .move(edge: .trailing)
-                    )
                 }
             }
             .onChange(of: $0.size) { oldValue, newValue in
@@ -132,11 +113,11 @@ struct NutritionSection: View {
     @Environment(\.colorScheme) var colorScheme
 
     @Binding var currentDate: Date
-    let showBackground: Bool
+    let inList: Bool
     
     var body: some View {
         ZStack {
-            if showBackground {
+            if inList {
                 Rectangle()
                     .fill(Color.gray.opacity(colorScheme == .light ? 0.06 : 0.2))
             }
@@ -145,7 +126,7 @@ struct NutritionSection: View {
                     name: "Calories",
                     color: CaloriesColor,
                     percent: !currentDate.isToday ? 0.7 : 0.9,
-                    showMenu: true
+                    showMenu: inList
                 )
                 bar(
                     name: "Protein",
@@ -225,15 +206,12 @@ struct MealsSection: View {
     @Binding var currentDate: Date
     @State var range: ClosedRange<Int> = 1...100
 
-    @Binding var transition: AnyTransition
-    
     var body: some View {
         LazyVStack {
             headerRow
                 .padding(.horizontal)
             ForEach(range, id: \.self) { _ in
                 dummyMeal1
-                    .transition(transition)
             }
         }
         .onChange(of: currentDate) { oldValue, newValue in
