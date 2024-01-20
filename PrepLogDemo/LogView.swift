@@ -24,12 +24,12 @@ let DayCircleWidth: CGFloat = 80
 let DaySliderHeight: CGFloat = 100
 
 struct DaySlider: View {
+    
+    @State var scrolledNumberOfDays: Int? = nil
+    
     var body: some View {
         VStack(spacing: 0) {
-            Text("Today, 20 January")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.bottom, 10)
+            titleButton
             Divider()
             Triangle()
                 .fill(Color(.label))
@@ -38,40 +38,158 @@ struct DaySlider: View {
         }
     }
     
+    var titleButton: some View {
+        Button {
+            withAnimation {
+                scrolledNumberOfDays = 0
+            }
+        } label: {
+            Text(dateTitle)
+                .foregroundStyle(Color(.label))
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .padding(.bottom, 10)
+        }
+    }
+    
+    var dateTitle: String {
+        currentDate.logTitle
+    }
+    
+    var currentDate: Date {
+        guard let scrolledNumberOfDays else { return Date.now }
+        return Date.now.moveDayBy(scrolledNumberOfDays)
+    }
+    
+    @State var horizontalPadding: CGFloat = 0
+    @State var width: CGFloat = 0
+    
     var scrollView: some View {
         GeometryReader {
             let size = $0.size
-            
             ScrollView(.horizontal) {
-                LazyHStack {
-                    ForEach(-3000...365, id: \.self) { numberOfDays in
-                        let date = Date.now.moveDayBy(numberOfDays)
-                        DayCircle(date: date)
+                LazyHStack(spacing: 0) {
+//                    ForEach(-3000...365, id: \.self) { numberOfDays in
+                    ForEach(-14...30, id: \.self) { numberOfDays in
+                        DayCircle(
+                            numberOfDays: numberOfDays,
+                            scrolledNumberOfDays: $scrolledNumberOfDays
+                        )
+                        .id(numberOfDays)
+                        .background(.green)
                     }
                 }
-                .padding(.horizontal, (size.width - DayCircleWidth) / 2) /// centers viewAligned scrolling
+                .padding(.horizontal, horizontalPadding)
                 .scrollTargetLayout()
             }
-                    .scrollTargetBehavior(.viewAligned)
+            .onAppear {
+                self.width = size.width
+                horizontalPadding = 0
+                scrolledNumberOfDays = 0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//                    horizontalPadding = (size.width - DayCircleWidth) / 2
+//                    scrolledNumberOfDays = 0
+                }
+            }
+//            .scrollTargetBehavior(.viewAligned)
+            .scrollTargetBehavior(DayScrollTargetBehavior())
 //            .scrollTargetBehavior(.paging)
-//            .defaultScrollAnchor(.some())
+//            .defaultScrollAnchor(.center)
+//            .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
+            .scrollPosition(id: $scrolledNumberOfDays)
         }
         .scrollIndicators(.hidden)
         .frame(height: DaySliderHeight)
     }
 }
 
-extension Date {
-    func weekday() -> Int? {
-        Calendar.current.dateComponents([.weekday], from: self).weekday
+struct DayScrollTargetBehavior: ScrollTargetBehavior {
+    func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+        print("target.rect.midX: \(target.rect.midX)")
+        print("target.rect.midX: \(target.rect.midX)")
+        print("")
+        
+        /// Use `target.midX` and see which dayCircle's midX its closest to (in relative terms of where its placed in `contentSize`)
+        /// Now determine what the `target.rect.origin.x` should be to align it in the center and move there
+//        DayCircleWidth
+
+        /// origins at 0, 80, 160, etc.
+        /// mid points at 40, 120, etc.
+        /// let w = DayCircleWidth
+        /// midPoint for 1 = (1 * 80) + 40 = (1 * w) + (w/2)
+        let w = DayCircleWidth
+        func midX(forIndex index: Int) -> CGFloat {
+            (CGFloat(index) * w) + (w/2.0)
+        }
+
+        func targetX(forMidX midX: CGFloat) -> CGFloat {
+            midX - (context.containerSize.width / 2.0)
+        }
+        
+        func targetX(forIndex index: Int) -> CGFloat {
+            targetX(forMidX: midX(forIndex: index))
+        }
+        
+        func index(atMidX midX: CGFloat) -> Int {
+            let multiple = midX / w
+            let index = floor(multiple)
+            return Int(index)
+        }
+        
+        let index = index(atMidX: target.rect.midX)
+        target.rect.origin.x = targetX(forIndex: index)
+        //        if target.rect.minY < (context.containerSize.height / 3.0), /// If the target is *close* to the top of the scorll view
+//           context.velocity.dy < 0.0 /// and the scroll is flicked up
+//        {
+//            /// I'll prefer to scroll to the exact top of the scrollview
+//            target.rect.origin.y = 0.0
+//        }
     }
 }
 
-struct DayCircle: View {
-    let date: Date
+extension Date {
+    var logTitle: String {
+        var prefix: String? {
+            if isToday { "Today" }
+            else if isYesterday { "Yesterday" }
+            else if isTomorrow { "Tomorrow" }
+            else if isThisYear { weekdayName }
+            else { nil }
+        }
+        
+        return if let prefix {
+            "\(prefix), \(mediumDateString)"
+        } else {
+            mediumDateString
+        }
+    }
     
-    var dayLetter: String {
-        switch date.weekday() {
+    var mediumDateString: String {
+        let formatter = DateFormatter()
+        if isThisYear {
+            formatter.dateFormat = "d MMMM"
+        } else {
+            formatter.dateFormat = "d MMMM yyyy"
+        }
+        return formatter.string(from: self)
+    }
+    
+    var isThisYear: Bool {
+        year == Date.now.year
+    }
+    
+    var weekdayName: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE"
+        return dateFormatter.string(from: self)
+    }
+    
+    var weekdayNumber: Int? {
+        Calendar.current.dateComponents([.weekday], from: self).weekday
+    }
+    
+    var weekdayUnambiguousLetter: String {
+        switch weekdayNumber {
         case 1:     "Su"
         case 2:     "M"
         case 3:     "Tu"
@@ -82,15 +200,44 @@ struct DayCircle: View {
         default:    ""
         }
     }
+}
+
+struct DayCircle: View {
+    
+//    let date: Date
+    let numberOfDays: Int
+    @Binding var scrolledNumberOfDays: Int?
+
+    var date: Date {
+        Date.now.moveDayBy(numberOfDays)
+    }
     
     var body: some View {
+//        Button {
+//            withAnimation {
+//                scrolledNumberOfDays = numberOfDays
+//            }
+//        } label: {
+            label
+            .onTapGesture {
+                withAnimation {
+                    scrolledNumberOfDays = numberOfDays
+                }
+            }
+//        }
+    }
+    
+    var label: some View {
         VStack {
-            Text(dayLetter)
+            Text(date.weekdayUnambiguousLetter)
                 .font(.subheadline)
                 .foregroundStyle(Color(.secondaryLabel))
-            Circle()
-                .fill(Color(.systemGray4))
-                .frame(width: 60, height: 60)
+            ZStack {
+                Circle()
+                    .fill(Color(.systemGray4))
+                    .frame(width: 60, height: 60)
+                Text("\(numberOfDays)")
+            }
 //                .padding()
         }
         .frame(width: DayCircleWidth, height: DaySliderHeight)
