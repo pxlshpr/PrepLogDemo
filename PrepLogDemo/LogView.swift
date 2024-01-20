@@ -108,7 +108,13 @@ struct MealsSection: View {
                     Spacer()
                 }
                 .frame(height: 44)
-//                .padding(.vertical, 8)
+                .draggable("Egg") {
+                    HStack {
+                        Text("🥚")
+                            .font(.largeTitle)
+                        Spacer().frame(width: 100)
+                    }
+                }
 
                 Divider()
                     .padding(.leading, 30)
@@ -127,6 +133,13 @@ struct MealsSection: View {
                     Spacer()
                 }
                 .frame(height: 44)
+                .draggable("Butter") {
+                    HStack {
+                        Text("🧈")
+                            .font(.largeTitle)
+                        Spacer().frame(width: 100)
+                    }
+                }
 
                 Divider()
                     .padding(.leading, 30)
