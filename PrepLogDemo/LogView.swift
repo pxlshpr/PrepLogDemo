@@ -1,6 +1,20 @@
 import SwiftUI
 import SwiftSugar
 
+//let CaloriesColor = Color.green
+//let ProteinColor = Color.blue
+//let FatColor = Color.pink
+//let CarbsColor = Color.yellow
+//let MealsColor = Color.purple
+//let MealsAccentColor = Color.purple
+
+let CaloriesColor = Color.gray
+let ProteinColor = Color.gray
+let FatColor = Color.gray
+let CarbsColor = Color.gray
+let MealsColor = Color.gray
+let MealsAccentColor = Color.gray
+
 struct LogView: View {
     
     @State var currentDate: Date = Date.now
@@ -28,21 +42,59 @@ struct LogView: View {
             DayWidth = dayWidth
 
             return ScrollView {
-                DaySlider(
-                    currentDate: $currentDate,
-                    savedDate: $savedDate,
-                    dayWidth: dayWidth,
-                    numberOfDummies: numberOfDummies,
-                    width: Binding<CGFloat>(
-                        get: { width },
-                        set: { _ in }
-                    )
-                )
                 
-                MealsSection(
-                    currentDate: $currentDate,
-                    transition: $transition
-                )
+                LazyVStack {
+
+                    DaySlider(
+                        currentDate: $currentDate,
+                        savedDate: $savedDate,
+                        dayWidth: dayWidth,
+                        numberOfDummies: numberOfDummies,
+                        width: Binding<CGFloat>(
+                            get: { width },
+                            set: { _ in }
+                        )
+                    )
+
+                    NutritionSection(
+                        name: "Calories",
+                        color: CaloriesColor,
+                        percent: Binding<Double>(
+                            get: { currentDate.isToday ? 0.7 : 0.9 },
+                            set: { _ in }
+                        )
+                    )
+                    NutritionSection(
+                        name: "Protein",
+                        color: ProteinColor,
+                        percent: Binding<Double>(
+                            get: { currentDate.isToday ? 0.95 : 0.1 },
+                            set: { _ in }
+                        )
+                     )
+                    NutritionSection(
+                        name: "Fat",
+                        color: FatColor,
+                        percent: Binding<Double>(
+                            get: { currentDate.isToday ? 0.8 : 0.2 },
+                            set: { _ in }
+                        )
+                    )
+                    NutritionSection(
+                        name: "Carbs",
+                        color: CarbsColor,
+                        percent: Binding<Double>(
+                            get: { currentDate.isToday ? 0.4 : 0.9 },
+                            set: { _ in }
+                        )
+                     )
+
+                    MealsSection(
+                        currentDate: $currentDate,
+                        transition: $transition
+                    )
+                    
+                }
             }
             .onChange(of: currentDate) { oldValue, newValue in
                 transition = if newValue > oldValue {
@@ -64,12 +116,66 @@ struct LogView: View {
     }
 }
 
+struct NutritionSection: View {
+    
+    @Environment(\.colorScheme) var colorScheme
+
+    let name: String
+    let color: Color
+    @Binding var percent: Double
+    
+    var body: some View {
+        ZStack {
+//            RoundedRectangle(cornerRadius: 5)
+            Rectangle()
+                .fill(color.opacity(colorScheme == .light ? 0.06 : 0.2))
+            VStack(spacing: 0) {
+                HStack {
+                    Text(name)
+                        .font(.headline)
+                    Spacer()
+                    Menu {
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(color)
+                            .frame(width: 44, alignment: .trailing)
+                            .frame(height: 30)
+                            .contentShape(Rectangle())
+                    }
+                }
+                .frame(height: 50)
+                
+                GeometryReader {
+                    let width = $0.size.width
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 3)
+                            .foregroundStyle(Color(.systemGray6))
+                        HStack(spacing: 0) {
+                            RoundedRectangle(cornerRadius: 3)
+                                .foregroundStyle(color)
+                            Spacer()
+                                .frame(width: width * (1 - percent))
+                        }
+                    }
+                }
+                
+                Spacer().frame(height: 15)
+            }
+            .padding(.horizontal)
+        }
+        .padding(.bottom, 10)
+        .animation(.snappy, value: percent)
+    }
+}
+
 struct MealsSection: View {
     
     @Environment(\.colorScheme) var colorScheme
     @Binding var currentDate: Date
-    @State var range: ClosedRange<Int> = 1...100
-    
+//    @State var range: ClosedRange<Int> = 1...100
+    @State var range: ClosedRange<Int> = 1...1
+
     @Binding var transition: AnyTransition
     
     var body: some View {
@@ -83,15 +189,17 @@ struct MealsSection: View {
         }
         .onChange(of: currentDate) { oldValue, newValue in
             withAnimation {
-                range = currentDate.isToday ? 1...100 : 1...1
+//                range = currentDate.isToday ? 1...100 : 1...1
+                range = !currentDate.isToday ? 1...100 : 1...1
             }
         }
     }
     
     var dummyMeal1: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.purple.opacity(colorScheme == .light ? 0.06 : 0.2))
+//            RoundedRectangle(cornerRadius: 5)
+            Rectangle()
+                .fill(MealsColor.opacity(colorScheme == .light ? 0.06 : 0.2))
             VStack(spacing: 0) {
                 HStack {
                     Text("11:00 am • Breakfast")
@@ -111,8 +219,13 @@ struct MealsSection: View {
                     } label: {
                         Image(systemName: "ellipsis")
                             .fontWeight(.semibold)
-                            .foregroundStyle(.purple)
+                            .foregroundStyle(MealsAccentColor)
+                            .frame(width: 44, alignment: .trailing)
+                            .frame(height: 30)
+                            .contentShape(Rectangle())
+//                            .background(.green)
                     }
+//                    .background(.green)
                 }
                 .frame(height: 50)
 
@@ -176,7 +289,7 @@ struct MealsSection: View {
                     } label: {
                         Image(systemName: "plus")
                             .fontWeight(.semibold)
-                            .foregroundStyle(.purple)
+                            .foregroundStyle(MealsAccentColor)
                     }
                     .frame(width: 30, alignment: .leading)
                     Spacer()
