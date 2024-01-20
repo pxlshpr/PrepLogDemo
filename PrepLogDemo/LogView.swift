@@ -108,6 +108,7 @@ struct MealsSection: View {
                     Spacer()
                 }
                 .frame(height: 44)
+                .contentShape(Rectangle())
                 .draggable("Egg") {
                     HStack {
                         Text("🥚")
@@ -133,6 +134,7 @@ struct MealsSection: View {
                     Spacer()
                 }
                 .frame(height: 44)
+                .contentShape(Rectangle())
                 .draggable("Butter") {
                     HStack {
                         Text("🧈")
