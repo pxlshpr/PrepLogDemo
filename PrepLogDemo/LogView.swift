@@ -27,12 +27,32 @@ struct LogView: View {
         removal: .move(edge: .trailing)
     )
     
+    @State var sideBarWidth: CGFloat = 400
+    
     var body: some View {
         Group {
             HStack(spacing: 0) {
                 if horizontalSizeClass == .regular {
-                    Text("Sidebar")
-                        .frame(width: 400)
+                    NavigationView {
+                        ScrollView {
+                            NutritionSection(
+                                currentDate: $currentDate,
+                                showBackground: false
+                            )
+                        }
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button {
+                                    
+                                } label: {
+                                    Image(systemName: "ellipsis.circle")
+                                }
+                            }
+                        }
+                        .navigationBarTitleDisplayMode(.inline)
+                    }
+                    .navigationViewStyle(.stack)
+                    .frame(width: sideBarWidth)
                 }
                 Divider()
                     .frame(width: 1)
@@ -71,7 +91,10 @@ struct LogView: View {
                 LazyVStack {
 
                     if horizontalSizeClass == .compact {
-                        NutritionSection(currentDate: $currentDate)
+                        NutritionSection(
+                            currentDate: $currentDate,
+                            showBackground: true
+                        )
                     }
                     
                     MealsSection(
@@ -96,6 +119,9 @@ struct LogView: View {
             }
             .onChange(of: $0.size) { oldValue, newValue in
                 savedDate = currentDate
+                if newValue.width < 900 {
+                    sideBarWidth = 300
+                }
             }
         }
     }
@@ -106,12 +132,14 @@ struct NutritionSection: View {
     @Environment(\.colorScheme) var colorScheme
 
     @Binding var currentDate: Date
+    let showBackground: Bool
     
     var body: some View {
         ZStack {
-//            RoundedRectangle(cornerRadius: 5)
-            Rectangle()
-                .fill(Color.gray.opacity(colorScheme == .light ? 0.06 : 0.2))
+            if showBackground {
+                Rectangle()
+                    .fill(Color.gray.opacity(colorScheme == .light ? 0.06 : 0.2))
+            }
             VStack(spacing: 0) {
                 bar(
                     name: "Calories",
