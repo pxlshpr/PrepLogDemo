@@ -39,76 +39,91 @@ struct DaySlider: View {
     }
     
     var titleButton: some View {
-        Button {
-            withAnimation {
-                scrolledNumberOfDays = 0
+        Text(dateTitle)
+            .foregroundStyle(Color(.label))
+            .font(.largeTitle)
+            .fontWeight(.bold)
+            .padding(.bottom, 10)
+            .onTapGesture {
+                ignoreNextScroll = true
+                withAnimation {
+                    scrolledNumberOfDays = 0 + numberOfDummies
+                }
             }
-        } label: {
-            Text(dateTitle)
-                .foregroundStyle(Color(.label))
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.bottom, 10)
-        }
     }
     
     var dateTitle: String {
         currentDate.logTitle
     }
     
-    var currentDate: Date {
+    @State var currentDate: Date = Date.now
+    @State var ignoreNextScroll = false
+    @State var numberOfDummies: Int = 0
+    
+    var getCurrentDate: Date {
         guard let scrolledNumberOfDays else { return Date.now }
         return Date.now.moveDayBy(scrolledNumberOfDays)
     }
     
-    @State var horizontalPadding: CGFloat = 0
-    @State var width: CGFloat = 0
-    
+    let start = -16
+    let end = 16
+//    let start = -3000
+//    let end = 365
+
     var scrollView: some View {
-        GeometryReader {
-            let size = $0.size
+        
+        func circle(at index: Int, ignoring numberOfDummies: Int) -> some View {
+            var isDummy: Bool {
+                index < start + numberOfDummies
+                ||
+                index > end - numberOfDummies
+            }
+            return DayCircle(
+                numberOfDays: index,
+                numberOfDummies: numberOfDummies,
+                scrolledNumberOfDays: $scrolledNumberOfDays,
+                ignoreNextScroll: $ignoreNextScroll
+            )
+            .id(index)
+//            .background(.green)
+            .opacity(isDummy ? 0 : 1)
+        }
+        
+        return GeometryReader {
+            let width = $0.size.width
+            let numberOfDummies = Int(floor((width / 2.0) / DayCircleWidth))
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
-//                    ForEach(-3000...365, id: \.self) { numberOfDays in
-                    ForEach(-14...30, id: \.self) { numberOfDays in
-                        DayCircle(
-                            numberOfDays: numberOfDays,
-                            scrolledNumberOfDays: $scrolledNumberOfDays
-                        )
-                        .id(numberOfDays)
-                        .background(.green)
+                    ForEach(start...end, id: \.self) { index in
+                        circle(at: index, ignoring: numberOfDummies)
                     }
                 }
-                .padding(.horizontal, horizontalPadding)
                 .scrollTargetLayout()
             }
-            .onAppear {
-                self.width = size.width
-                horizontalPadding = 0
-                scrolledNumberOfDays = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                    horizontalPadding = (size.width - DayCircleWidth) / 2
-//                    scrolledNumberOfDays = 0
-                }
-            }
-//            .scrollTargetBehavior(.viewAligned)
             .scrollTargetBehavior(DayScrollTargetBehavior())
-//            .scrollTargetBehavior(.paging)
-//            .defaultScrollAnchor(.center)
-//            .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
-            .scrollPosition(id: $scrolledNumberOfDays)
+            .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
+            .onAppear {
+                ignoreNextScroll = true
+                scrolledNumberOfDays = 0 + numberOfDummies
+                self.numberOfDummies = numberOfDummies
+            }
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
         .frame(height: DaySliderHeight)
+        .onChange(of: scrolledNumberOfDays) { oldValue, newValue in
+            var date = getCurrentDate
+            if ignoreNextScroll {
+                date = date.moveDayBy(-numberOfDummies)
+                ignoreNextScroll = false
+            }
+            self.currentDate = date
+            print("scrolledNumberOfDays changed to: \(String(describing: newValue))")
+        }
     }
 }
 
 struct DayScrollTargetBehavior: ScrollTargetBehavior {
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
-        print("target.rect.midX: \(target.rect.midX)")
-        print("target.rect.midX: \(target.rect.midX)")
-        print("")
-        
         /// Use `target.midX` and see which dayCircle's midX its closest to (in relative terms of where its placed in `contentSize`)
         /// Now determine what the `target.rect.origin.x` should be to align it in the center and move there
 //        DayCircleWidth
@@ -136,7 +151,10 @@ struct DayScrollTargetBehavior: ScrollTargetBehavior {
             return Int(index)
         }
         
+//        print("Getting index at target.rect.midX: \(target.rect.midX)")
         let index = index(atMidX: target.rect.midX)
+//        print("index = \(index)")
+//        print("")
         target.rect.origin.x = targetX(forIndex: index)
         //        if target.rect.minY < (context.containerSize.height / 3.0), /// If the target is *close* to the top of the scorll view
 //           context.velocity.dy < 0.0 /// and the scroll is flicked up
@@ -206,7 +224,9 @@ struct DayCircle: View {
     
 //    let date: Date
     let numberOfDays: Int
+    let numberOfDummies: Int
     @Binding var scrolledNumberOfDays: Int?
+    @Binding var ignoreNextScroll: Bool
 
     var date: Date {
         Date.now.moveDayBy(numberOfDays)
@@ -220,8 +240,9 @@ struct DayCircle: View {
 //        } label: {
             label
             .onTapGesture {
+                ignoreNextScroll = true
                 withAnimation {
-                    scrolledNumberOfDays = numberOfDays
+                    scrolledNumberOfDays = numberOfDays + numberOfDummies
                 }
             }
 //        }
