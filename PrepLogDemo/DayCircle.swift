@@ -49,7 +49,7 @@ struct DayCircle: View {
                             width: width * K.DayCircle.ratio,
                             height: width * K.DayCircle.ratio
                         )
-                    Text("\(numberOfDays)")
+//                    Text("\(numberOfDays)")
                 }
                 Spacer()
                     .frame(height: K.DayCircle.Padding.bottom)

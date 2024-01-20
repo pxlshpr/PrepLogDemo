@@ -68,11 +68,70 @@ struct MealsSection: View {
         ZStack {
             RoundedRectangle(cornerRadius: 5)
                 .fill(Color.purple.opacity(colorScheme == .light ? 0.06 : 0.2))
-            VStack {
+            VStack(spacing: 0) {
                 HStack {
                     Text("11:00 am • Breakfast")
                         .font(.headline)
                     Spacer()
+                    Menu {
+                        Button("Edit Meal") {
+                            
+                        }
+                        Button("Duplicate Meal") {
+                            
+                        }
+                        Divider()
+                        Button("Delete Meal", role: .destructive) {
+                            
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.purple)
+                    }
+                }
+                .frame(height: 50)
+
+                Divider()
+
+                HStack(spacing: 0) {
+                    Text("🥚")
+                        .frame(width: 30, alignment: .leading)
+                    Text("Egg")
+                        .fontWeight(.medium)
+                    Text(", Whole, Raw")
+                        .foregroundStyle(.secondary)
+                    Text(", Fresh")
+                        .foregroundStyle(.secondary)
+                    Text(" • 2 large")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .frame(height: 44)
+//                .padding(.vertical, 8)
+
+                Divider()
+                    .padding(.leading, 30)
+
+                HStack(spacing: 0) {
+                    Text("🧈")
+                        .frame(width: 30, alignment: .leading)
+                    Text("Butter")
+                        .fontWeight(.medium)
+                    Text(", Unsalted")
+                        .foregroundStyle(.secondary)
+                    Text(", Lurpak")
+                        .foregroundStyle(.tertiary)
+                    Text(" • 25 g")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                }
+                .frame(height: 44)
+
+                Divider()
+                    .padding(.leading, 30)
+
+                HStack {
                     Button {
                         
                     } label: {
@@ -80,41 +139,14 @@ struct MealsSection: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(.purple)
                     }
+                    .frame(width: 30, alignment: .leading)
+                    Spacer()
+                    Text("487 kcal")
+                        .font(.headline)
                 }
-
-                HStack {
-                    Text("🥚")
-                    HStack(spacing: 0) {
-                        Text("Egg")
-                            .fontWeight(.medium)
-                        Text(", Whole, Raw")
-                            .foregroundStyle(.secondary)
-                        Text(", Fresh")
-                            .foregroundStyle(.secondary)
-                        Text(" • 2 large")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                HStack {
-                    Text("🧈")
-                    HStack(spacing: 0) {
-                        Text("Butter")
-                            .fontWeight(.medium)
-                        Text(", Unsalted")
-                            .foregroundStyle(.secondary)
-                        Text(", Lurpak")
-                            .foregroundStyle(.tertiary)
-                        Text(" • 25 g")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+                .frame(height: 50)
             }
-            .padding(.vertical, 10)
+//            .padding(.vertical, 10)
             .padding(.horizontal)
         }
         .padding(.bottom, 10)
