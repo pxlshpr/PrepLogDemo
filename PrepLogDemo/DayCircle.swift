@@ -8,8 +8,8 @@ struct DayCircle: View {
     
     let numberOfDays: Int
     let numberOfDummies: Int
-    @Binding var s: Int?
-    @Binding var ms: Int?
+    @Binding var scrolledNumberOfDays: Int?
+//    @Binding var ms: Int?
     @Binding var ignoreNextScroll: Bool
 
     var body: some View {
@@ -18,12 +18,10 @@ struct DayCircle: View {
                 print("👆🏽 Tapped: \(numberOfDays), ignoreNextScroll: \(ignoreNextScroll)")
                 Haptics.feedback(style: .soft)
                 ignoreNextScroll = true
+                /// Crucial to set this to `nil` first, otherwise in edge case of tapping first visible circle (with the `numberOfDummies` offset handling scroll position for taps vs manual sliding differently)—the value doesn't appear to change, and therefore the scroll doesn't occur
+                scrolledNumberOfDays = nil
                 withAnimation {
-                    if let s, let ms {
-                        print("    s: \(s), ms: \(ms)")
-                    }
-                    print("    Setting ms to: \(numberOfDays + numberOfDummies)")
-                    ms = numberOfDays + numberOfDummies
+                    scrolledNumberOfDays = numberOfDays + numberOfDummies
                 }
             }
     }

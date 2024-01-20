@@ -3,14 +3,15 @@ import SwiftSugar
 
 struct DaySlider: View {
   
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
     let dayWidth: CGFloat
     let numberOfDummies: Int
 
     @State var currentDate: Date = Date.now
     @State var ignoreNextScroll = false
     
-    @State var s: Int? = nil
-    @State var ms: Int? = nil
+    @State var scrolledNumberOfDays: Int? = nil
 
 //    let start = -16
 //    let end = 16
@@ -34,25 +35,9 @@ struct DaySlider: View {
             /// Scroll to today
             print("👁️ DaySlider.onAppear")
             ignoreNextScroll = true
-            s = 0 + numberOfDummies
+            scrolledNumberOfDays = 0 + numberOfDummies
         }
-        .onChange(of: s) { oldValue, newValue in
-            if let newValue {
-                print("s changed to: \(newValue)")
-            } else {
-                print("s changed to: nil")
-            }
-//            var date = getCurrentDate
-//            if ignoreNextScroll {
-//                date = date.moveDayBy(-numberOfDummies)
-//                ignoreNextScroll = false
-//            }
-//            self.currentDate = date
-        }
-        .onChange(of: ms) { oldValue, newValue in
-            withAnimation {
-                s = newValue
-            }
+        .onChange(of: scrolledNumberOfDays) { oldValue, newValue in
             var date = getCurrentDate
             if ignoreNextScroll {
                 date = date.moveDayBy(-numberOfDummies)
@@ -66,46 +51,42 @@ struct DaySlider: View {
         ScrollView(.horizontal) {
             LazyHStack(spacing: 0) {
                 ForEach(start...end, id: \.self) { index in
-                    circle(at: index)
+                    dayCircle(at: index)
                 }
             }
             .scrollTargetLayout()
         }
         .scrollTargetBehavior(DayScrollTargetBehavior())
-        .scrollPosition(id: $s, anchor: .center)
+        .scrollPosition(id: $scrolledNumberOfDays, anchor: .center)
         .scrollIndicators(.hidden)
         .frame(height: DaySliderHeight)
     }
     
-    func circle(
-        at index: Int
-    ) -> some View {
+    func dayCircle(at index: Int) -> some View {
         var isDummy: Bool {
-            index < start + numberOfDummies
-            ||
-            index > end - numberOfDummies
+            index < start + numberOfDummies || index > end - numberOfDummies
         }
         return DayCircle(
             numberOfDays: index,
             numberOfDummies: numberOfDummies,
-            s: $s,
-            ms: $ms,
+            scrolledNumberOfDays: $scrolledNumberOfDays,
             ignoreNextScroll: $ignoreNextScroll
         )
         .id(index)
         .frame(width: dayWidth)
         .opacity(isDummy ? 0 : 1)
     }
+    
     var titleButton: some View {
         Text(dateTitle)
             .foregroundStyle(Color(.label))
-            .font(.largeTitle)
+            .font(horizontalSizeClass == .compact ? .title : .largeTitle)
             .fontWeight(.bold)
             .padding(.bottom, 10)
             .onTapGesture {
                 ignoreNextScroll = true
                 withAnimation {
-                    s = 0 + numberOfDummies
+                    scrolledNumberOfDays = 0 + numberOfDummies
                 }
             }
     }
@@ -115,8 +96,8 @@ struct DaySlider: View {
     }
     
     var getCurrentDate: Date {
-        guard let s else { return Date.now }
-        return Date.now.moveDayBy(s)
+        guard let scrolledNumberOfDays else { return Date.now }
+        return Date.now.moveDayBy(scrolledNumberOfDays)
     }
     
     var triangle: some View {
