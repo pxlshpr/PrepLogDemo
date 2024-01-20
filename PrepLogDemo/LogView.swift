@@ -14,7 +14,7 @@ struct LogView: View {
         }
         .navigationViewStyle(.stack)
     }
-    
+
     var content: some View {
         GeometryReader {
             let width = $0.size.width
@@ -25,6 +25,7 @@ struct LogView: View {
             print("numberOfDummies: \(numberOfDummies)")
             print("dayWidth: \(dayWidth)")
             DayWidth = dayWidth
+
             return ScrollView {
                 DaySlider(
                     currentDate: $currentDate,
@@ -36,12 +37,11 @@ struct LogView: View {
                         set: { _ in }
                     )
                 )
+                
+                
             }
             .onChange(of: $0.size) { oldValue, newValue in
                 savedDate = currentDate
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                    savedDate = nil
-                }
             }
         }
     }
