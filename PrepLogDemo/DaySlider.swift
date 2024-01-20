@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftSugar
+import SwiftHaptics
 
 struct DaySlider: View {
   
@@ -141,7 +142,9 @@ struct DaySlider: View {
             .font(horizontalSizeClass == .compact ? .title2 : .largeTitle)
             .fontWeight(.bold)
             .padding(.bottom, 10)
+            .contentShape(Rectangle())
             .onTapGesture {
+                Haptics.successFeedback()
                 ignoreNextScroll = true
                 withAnimation {
                     scrolledNumberOfDays = 0 + numberOfDummies
